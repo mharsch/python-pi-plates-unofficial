@@ -8,7 +8,7 @@ Digital Input Functions:
         falling, or 'b' for both.
     disableDINint(addr,bit) - disable interrupts on the specified bit
     getTEMP(addr,bit,scale) - a special function to read a DS18X20 temp sensor
-        attached to the specified bit input. Scale values can be 'c', 'f', or 'k' 
+        attached to the specified bit input. Scale values can be 'c', 'f', or 'k'
         for Celsius, Fahrenheit, or Kelvin. Note that this function takes about
         1 second to complete.
 
@@ -35,11 +35,11 @@ Bicolor LED Control Functions:
     clrLED(addr,color) - turn off one of the LEDs in the bicolor LED package
 
 Hybrid Functions:
-    getRANGE(addr,channel,units) - reads distance from an HC-SR04 ultrasonic 
+    getRANGE(addr,channel,units) - reads distance from an HC-SR04 ultrasonic
         sensor. The channel argument calls out the value of the digital input /
         digital output pair required to interface to the sensor. The units can
         'i' for inches or 'c' for centimetres.
-    
+
 System Level Functions:
     getID(addr) - return Pi-Plate descriptor string
     getFWrev(addr) - return FW revision in byte format
@@ -51,7 +51,7 @@ System Level Functions:
     intDisable(addr) - disables and clears all interrupts on the DAQC.
     getINTflags(addr) - returns 16 bit flag value then clears all INT flags
     Poll() - determine what Pi-Plates are on stack as well as their addresses
-    
+
 Switch Functions:
     getSWstate(addr) - returns current state of on board switch. A value of 1 is
         returned when the switch is up and a value of 0 is returned when it's
@@ -68,7 +68,7 @@ Switch Functions:
 Definitions:
     Address (addr): DAQCplates have jumpers on the board that allow
         their address to be set to a value between 0 and 7.
-    ADC (analog to digital converter) channels can be 0 through 8 for a 
+    ADC (analog to digital converter) channels can be 0 through 8 for a
         total of 9 channels. Reading channel 8 will return the power supply
         voltage.
     DIN (digital input) bit values can be 0 through 7 for a total of 8 bits
@@ -78,3 +78,4 @@ Definitions:
     DAC (digital to analog converter) channels can be 0 or 1 for a total of
         2 channels. The output value can be between 0 and 4.096 volts
     LED (led) values can be 0 for the red LED or 1 for the green.
+

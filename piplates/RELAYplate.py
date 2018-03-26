@@ -11,7 +11,7 @@ GPIO.setwarnings(False)
 if (sys.version_info < (2,7,0)):
     sys.stderr.write("You need at least python 2.7.0 to use this library")
     exit(1)
-    
+
 GPIO.setmode(GPIO.BCM)
 RELAYbaseADDR=24
 ppFRAME = 25
@@ -21,7 +21,7 @@ GPIO.output(ppFRAME,False)  #Initialize FRAME signal
 time.sleep(.001)            #let Pi-Plate reset SPI engine if necessary
 GPIO.setup(ppINT, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 spi = spidev.SpiDev()
-spi.open(0,1)	
+spi.open(0,1)
 localPath=site.getsitepackages()[0]
 #helpPath=localPath+'/piplates/RELAYhelp.txt'
 helpPath='RELAYhelp.txt'       #for development only
@@ -34,17 +34,17 @@ MAXADDR=8
 relaysPresent = list(range(8))
 
 #==============================================================================#
-# HELP Functions	                                                           #
+# HELP Functions                                                               #
 #==============================================================================#
 def Help():
-	help()
+    help()
 
 def HELP():
-	help()	
-	
+    help()
+
 def help():
     valid=True
-    try:    
+    try:
         f=open(helpPath,'r')
         while(valid):
             Count=0
@@ -54,7 +54,7 @@ def help():
                     print (s[:len(s)-1])
                     Count = Count + 1
                     if (Count==20):
-                        Input=input('press \"Enter\" for more...')                        
+                        Input=input('press \"Enter\" for more...')
                 else:
                     Count=100
                     valid=False
@@ -67,7 +67,7 @@ def getPMrev():
 
 
 #==============================================================================#
-# RELAY Functions	                                                           #
+# RELAY Functions                                                              #
 #==============================================================================#
 def relayON(addr,relay):
     VerifyADDR(addr)
@@ -78,25 +78,25 @@ def relayOFF(addr,relay):
     VerifyADDR(addr)
     VerifyRELAY(relay)
     ppCMDr(addr,0x11,relay,0,0)
-    
+
 def relayTOGGLE(addr,relay):
     VerifyADDR(addr)
     VerifyRELAY(relay)
-    ppCMDr(addr,0x12,relay,0,0)   
+    ppCMDr(addr,0x12,relay,0,0)
 
 def relayALL(addr,relays):
     VerifyADDR(addr)
     assert ((relays>=0) and (relays<=127)),"Argument out of range. Must be between 0 and 127"
-    ppCMDr(addr,0x13,relays,0,0)     
- 
+    ppCMDr(addr,0x13,relays,0,0)
+
 def relaySTATE(addr):
     VerifyADDR(addr)
-    resp=ppCMDr(addr,0x14,0,0,1) 
+    resp=ppCMDr(addr,0x14,0,0,1)
     return resp[0]
 
-#==============================================================================#	
-# LED Functions	                                                               #
-#==============================================================================#   
+#==============================================================================#
+# LED Functions                                                                #
+#==============================================================================#
 def setLED(addr):
     VerifyADDR(addr)
     resp=ppCMDr(addr,0x60,0,0,0)
@@ -108,13 +108,13 @@ def clrLED(addr):
 def toggleLED(addr):
     VerifyADDR(addr)
     resp=ppCMDr(addr,0x62,0,0,0)
-    
-#==============================================================================#	
-# SYSTEM Functions	                                                           #
-#==============================================================================#     
+
+#==============================================================================#
+# SYSTEM Functions                                                             #
+#==============================================================================#
 def getID(addr):
     global RELAYbaseADDR
-    VerifyADDR(addr)   
+    VerifyADDR(addr)
     addr=addr+RELAYbaseADDR
     id=""
     arg = list(range(4))
@@ -129,7 +129,7 @@ def getID(addr):
     #null = spi.writebytes(arg)
     count=0
 #    time.sleep(.01)
-    while (count<20): 
+    while (count<20):
         dummy=spi.xfer([00],500000,20)
         if (dummy[0] != 0):
             num = dummy[0]
@@ -147,8 +147,8 @@ def getHWrev(addr):
     rev = resp[0]
     whole=float(rev>>4)
     point = float(rev&0x0F)
-    return whole+point/10.0	 
-    
+    return whole+point/10.0
+
 def getFWrev(addr):
     global RELAYbaseADDR
     VerifyADDR(addr)
@@ -159,11 +159,11 @@ def getFWrev(addr):
     return whole+point/10.0
 
 def getVersion():
-    return RPversion      
-        
-#==============================================================================#	
-# LOW Level Functions	                                                       #
-#==============================================================================#          
+    return RPversion
+
+#==============================================================================#
+# LOW Level Functions                                                          #
+#==============================================================================#
 def VerifyRELAY(relay):
     assert ((relay>=1) and (relay<=7)),"Relay number out of range. Must be between 1 and 7"
 
@@ -185,35 +185,35 @@ def ppCMDr(addr,cmd,param1,param2,bytes2return):
     #null = spi.writebytes(arg)
     if bytes2return>0:
         time.sleep(.0001)
-        for i in range(0,bytes2return):	
+        for i in range(0,bytes2return):
             dummy=spi.xfer([00],500000,20)
             resp.append(dummy[0])
     time.sleep(.001)
     GPIO.output(ppFRAME,False)
     time.sleep(.001)
-    return resp    
-    
+    return resp
+
 def getADDR(addr):
     global RELAYbaseADDR
     resp = []
     resp=ppCMDr(addr,0x00,0,0,1)
     return resp[0]-RELAYbaseADDR
 
-    
-def quietPoll():   
+
+def quietPoll():
     global relaysPresent
     ppFoundCount=0
     for i in range (0,8):
         relaysPresent[i]=0
         rtn = getADDR(i)
-        if (rtn==i):           
+        if (rtn==i):
             relaysPresent[i]=1
             ppFoundCount += 1
             #RESET(i)
 
 def RESET(addr):
     VerifyADDR(addr)
-    resp=ppCMDr(addr,0x0F,0,0,0)    
+    resp=ppCMDr(addr,0x0F,0,0,0)
     time.sleep(.10)
 
-quietPoll()    
+quietPoll()

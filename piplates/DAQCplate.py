@@ -10,7 +10,7 @@ GPIO.setwarnings(False)
 if (sys.version_info < (2,7,0)):
     sys.stderr.write("You need at least python 2.7.0 to use thid module")
     exit(1)
-    
+
 GPIO.setmode(GPIO.BCM)
 GPIObaseADDR=8
 ppFRAME = 25
@@ -19,7 +19,7 @@ GPIO.setup(ppFRAME,GPIO.OUT)
 GPIO.output(ppFRAME,False)  #Initialize FRAME signal
 GPIO.setup(ppINT, GPIO.IN, pull_up_down=GPIO.PUD_UP)    #reserve interrupt input
 spi = spidev.SpiDev()
-spi.open(0,1)	
+spi.open(0,1)
 localPath=site.getsitepackages()[0]
 helpPath=localPath+'/piplates/DAQChelp.txt'
 #helpPath='DAQChelp.txt'
@@ -29,20 +29,20 @@ DAQCversion=1.4
 daqcsPresent = list(range(8))
 Vcc=list(range(8))
 MAXADDR=8
-	
+
 def CLOSE():
-	spi.close()
-	GPIO.cleanup()
+    spi.close()
+    GPIO.cleanup()
 
 def Help():
-	help()
+    help()
 
 def HELP():
-	help()	
-	
+    help()
+
 def help():
     valid=True
-    try:    
+    try:
         f=open(helpPath,'r')
         while(valid):
             Count=0
@@ -52,7 +52,7 @@ def help():
                     print (s[:len(s)-1])
                     Count = Count + 1
                     if (Count==20):
-                        Input=input('press \"Enter\" for more...')                        
+                        Input=input('press \"Enter\" for more...')
                 else:
                     Count=100
                     valid=False
@@ -62,13 +62,13 @@ def help():
 
 
 
-#===============================================================================#	
-# ADC Functions	     	                                              			#
-#===============================================================================#	
+#===============================================================================#
+# ADC Functions                                                                 #
+#===============================================================================#
 def getADC(addr,channel):
     VerifyADDR(addr)
     VerifyAINchannel(channel)
-	
+
     resp=ppCMD(addr,0x30,channel,0,2)
     value=(256*resp[0]+resp[1])
     value=round(value*4.096/1024,3)
@@ -78,15 +78,15 @@ def getADC(addr,channel):
 
 def getADCall(addr):
     value=list(range(8))
-    VerifyADDR(addr)    
+    VerifyADDR(addr)
     resp=ppCMD(addr,0x31,0,0,16)
     for i in range (0,8):
         value[i]=(256*resp[2*i]+resp[2*i+1])
         value[i]=round(value[i]*4.096/1024,3)
-    return value    
-    
-#===============================================================================#	
-# Digital Input Functions	                                                   	#
+    return value
+
+#===============================================================================#
+# Digital Input Functions                                                       #
 #===============================================================================#
 def getDINbit(addr,bit):
     VerifyADDR(addr)
@@ -96,27 +96,27 @@ def getDINbit(addr,bit):
         return 1
     else:
         return 0
-		
+
 def getDINall(addr):
     VerifyADDR(addr)
     resp=ppCMD(addr,0x25,0,0,1)
     return resp[0]
 
-def enableDINint(addr, bit, edge):	# enable DIN interrupt
+def enableDINint(addr, bit, edge):    # enable DIN interrupt
     VerifyADDR(addr)
-    VerifyDINchannel(bit)	
+    VerifyDINchannel(bit)
     if ((edge=='f') or (edge=='F')):
-        resp=ppCMD(addr,0x21,bit,0,0)		
+        resp=ppCMD(addr,0x21,bit,0,0)
     if ((edge=='r') or (edge=='R')):
         resp=ppCMD(addr,0x22,bit,0,0)
     if ((edge=='b') or (edge=='B')):
-        resp=ppCMD(addr,0x23,bit,0,0)		
-		
-def disableDINint(addr,bit):	# disable DIN interrupt
+        resp=ppCMD(addr,0x23,bit,0,0)
+
+def disableDINint(addr,bit):    # disable DIN interrupt
     VerifyADDR(addr)
     VerifyDINchannel(bit)
     resp=ppCMD(addr,0x24,bit,0,0)
-	
+
 def getTEMP(addr,channel,scale):
     VerifyADDR(addr)
     assert ((channel>=0) and (channel<=7)),"Channel value out of range. Must be a value between 0 and 7"
@@ -135,11 +135,11 @@ def getTEMP(addr,channel,scale):
     if (scal=='f'):
         Temp = round((Temp*1.8+32.2),4)
     return Temp
-    
-    
-#===============================================================================#	
-# Hybrid Functions	                                                   	#
-#===============================================================================#    
+
+
+#===============================================================================#
+# Hybrid Functions                                                              #
+#===============================================================================#
 def getRANGE(addr,channel,units):
     VerifyADDR(addr)
     assert ((channel>=0) and (channel<=6)),"Channel value out of range. Must be a value between 0 and 6"
@@ -156,10 +156,10 @@ def getRANGE(addr,channel,units):
         Range = Range/148.148
     Range=round(Range,2)
     return Range
-    
-#===============================================================================#	
-# LED Functions	                                                   		   		#
-#===============================================================================#			
+
+#===============================================================================#
+# LED Functions                                                                 #
+#===============================================================================#
 def setLED(addr,led):
     VerifyADDR(addr)
     VerifyLED(led)
@@ -173,20 +173,20 @@ def clrLED(addr,led):
 def toggleLED(addr,led):
     VerifyADDR(addr)
     VerifyLED(led)
-    resp=ppCMD(addr,0x62,led,0,0)	
+    resp=ppCMD(addr,0x62,led,0,0)
 
 def getLED(addr,led):
     VerifyADDR(addr)
     VerifyLED(led)
     resp=ppCMD(addr,0x63,led,0,1)
-    return resp[0]	
+    return resp[0]
 
 def VerifyLED(led):
     assert (led>=0 and led<=1),"Invalid LED value. Must be 0 or 1"
-    
-#==============================================================================#	
-# Switch Functions	                                                   #
-#==============================================================================#		
+
+#==============================================================================#
+# Switch Functions                                                             #
+#==============================================================================#
 def getSWstate(addr):
     VerifyADDR(addr)
     resp=ppCMD(addr,0x50,0,0,1)
@@ -198,8 +198,8 @@ def enableSWint(addr):
 
 def disableSWint(addr):
     VerifyADDR(addr)
-    resp=ppCMD(addr,0x52,0,0,0)		
-	
+    resp=ppCMD(addr,0x52,0,0,0)
+
 def enableSWpower(addr):
     VerifyADDR(addr)
     resp=ppCMD(addr,0x53,0,0,0)
@@ -207,31 +207,31 @@ def enableSWpower(addr):
 def disableSWpower(addr):
     VerifyADDR(addr)
     resp=ppCMD(addr,0x54,0,0,0)
-		
-		
-#==============================================================================#	
-# Digital Output Functions	                                                   #
-#==============================================================================#	
+
+
+#==============================================================================#
+# Digital Output Functions                                                     #
+#==============================================================================#
 def setDOUTbit(addr,bit):
     VerifyADDR(addr)
     VerifyDOUTchannel(bit)
     resp=ppCMD(addr,0x10,bit,0,0)
 
-	
+
 def clrDOUTbit(addr,bit):
     VerifyADDR(addr)
     VerifyDOUTchannel(bit)
-    resp=ppCMD(addr,0x11,bit,0,0)		
+    resp=ppCMD(addr,0x11,bit,0,0)
 
 def toggleDOUTbit(addr,bit):
     VerifyADDR(addr)
     VerifyDOUTchannel(bit)
-    resp=ppCMD(addr,0x12,bit,0,0)		
-	
+    resp=ppCMD(addr,0x12,bit,0,0)
+
 def setDOUTall(addr,byte):
     VerifyADDR(addr)
     assert ((byte>=0) and (byte<=127)),"Digital output value out of range. Must be in the range of 0 to 127"
-    resp=ppCMD(addr,0x13,byte,0,0)			
+    resp=ppCMD(addr,0x13,byte,0,0)
 
 def getDOUTbyte(addr):
     VerifyADDR(addr)
@@ -239,9 +239,9 @@ def getDOUTbyte(addr):
     return resp
 
 
-#==============================================================================#	
-# PWM and DAC Output Functions	                                                   #
-#==============================================================================#	
+#==============================================================================#
+# PWM and DAC Output Functions                                                 #
+#==============================================================================#
 def setPWM(addr,channel,value):
     VerifyADDR(addr)
     assert (value<=1023 and value>=0), "ERROR: PWM argument out of range - must be between 0 and 1023"
@@ -256,8 +256,8 @@ def getPWM(addr,channel):
     ## Return PWM set value
     resp=ppCMD(addr,0x40+channel+2,0,0,2)
     value=(256*resp[0]+resp[1])
-    return value	
-	
+    return value
+
 def setDAC(addr,channel,value):
     global Vcc
     VerifyADDR(addr)
@@ -268,7 +268,7 @@ def setDAC(addr,channel,value):
     lobyte = value - (hibyte<<8)
     resp=ppCMD(addr,0x40+channel,hibyte,lobyte,0)
 
-	
+
 def getDAC(addr,channel):
     global Vcc
     VerifyADDR(addr)
@@ -282,28 +282,28 @@ def getDAC(addr,channel):
 def calDAC(addr):
     global Vcc
     VerifyADDR(addr)
-    Vcc[addr] = getADC(addr,8)   
-        
-#==============================================================================#	
-# Interrupt Control Functions	                                               #
-#==============================================================================#	
-def intEnable(addr):	#DAQC will pull down on INT pin if an enabled event occurs
+    Vcc[addr] = getADC(addr,8)
+
+#==============================================================================#
+# Interrupt Control Functions                                                  #
+#==============================================================================#
+def intEnable(addr):    #DAQC will pull down on INT pin if an enabled event occurs
     VerifyADDR(addr)
     resp=ppCMD(addr,0x04,0,0,0)
-	
+
 def intDisable(addr):
     VerifyADDR(addr)
     resp=ppCMD(addr,0x05,0,0,0)
-	
-def getINTflags(addr):	#read INT flag registers in DAQC
+
+def getINTflags(addr):    #read INT flag registers in DAQC
     VerifyADDR(addr)
     resp=ppCMD(addr,0x06,0,0,2)
     value=(256*resp[0]+resp[1])
     return value
-		
-#==============================================================================#	
-# System Functions	                                                   		   #
-#==============================================================================#	
+
+#==============================================================================#
+# System Functions                                                             #
+#==============================================================================#
 def getFWrev(addr):
     VerifyADDR(addr)
     resp=ppCMD(addr,0x03,0,0,1)
@@ -311,23 +311,23 @@ def getFWrev(addr):
     whole=float(rev>>4)
     point = float(rev&0x0F)
     return whole+point/10.0
-	
+
 def getHWrev(addr):
     VerifyADDR(addr)
     resp=ppCMD(addr,0x02,0,0,1)
     rev = resp[0]
     whole=float(rev>>4)
     point = float(rev&0x0F)
-    return whole+point/10.0	
+    return whole+point/10.0
 
 def getVersion():
-    return DAQCversion    
-    
+    return DAQCversion
+
 def getADDR(addr):
     assert ((addr>=0) and (addr<MAXADDR)),"DAQCplate address must be in the range of 0 to 7"
     resp=ppCMD(addr,0x00,0,0,1)
     return resp[0]
-	
+
 def getID(addr):
     global GPIObaseADDR
     VerifyADDR(addr)
@@ -345,7 +345,7 @@ def getID(addr):
     null = spi.writebytes(arg)
     count=0
     time.sleep(.0001)
-    while (count<20): 
+    while (count<20):
         dummy=spi.xfer([00],500000,40)
         time.sleep(.0001)
         if (dummy[0] != 0):
@@ -355,13 +355,13 @@ def getID(addr):
         else:
             count=20
     GPIO.output(ppFRAME,False)
-    return id	
-	
-def getPROGdata(addr,paddr):	#read a byte of data from program memory
+    return id
+
+def getPROGdata(addr,paddr):    #read a byte of data from program memory
     VerifyADDR(addr)
     resp=ppCMD(addr,0xF0,paddr>>8,paddr&0xFF,2)
     value=(256*resp[0]+resp[1])
-    return hex(value)	
+    return hex(value)
 
 def Poll():
     ppFoundCount=0
@@ -377,16 +377,16 @@ def VerifyDINchannel(din):
     assert ((din>=0) and (din<=7)),"Digital input channel value out of range. Must be in the range of 0 to 7"
 
 def VerifyAINchannel(ain):
-    assert ((ain>=0) and (ain<=8)),"Analog input channel value out of range. Must be in the range of 0 to 8"    
-   
+    assert ((ain>=0) and (ain<=8)),"Analog input channel value out of range. Must be in the range of 0 to 8"
+
 def VerifyDOUTchannel(dout):
     assert ((dout>=0) and (dout<=6)),"Digital output channel value out of range. Must be in the range of 0 to 6"
-   
+
 def VerifyADDR(addr):
     assert ((addr>=0) and (addr<MAXADDR)),"DAQCplate address must be in the range of 0 to 7"
     addr_str=str(addr)
     assert (daqcsPresent[addr]==1),"No DAQCplate found at address "+addr_str
-	
+
 def ppCMD(addr,cmd,param1,param2,bytes2return):
     global GPIObaseADDR
     arg = list(range(4))
@@ -398,18 +398,18 @@ def ppCMD(addr,cmd,param1,param2,bytes2return):
     #    time.sleep(.0005)
     GPIO.output(ppFRAME,True)
     null=spi.xfer(arg,300000,40)
-    #null = spi.writebytes(arg)   
+    #null = spi.writebytes(arg)
     if bytes2return>0:
-        time.sleep(.0001)        
-        for i in range(0,bytes2return):	
+        time.sleep(.0001)
+        for i in range(0,bytes2return):
             dummy=spi.xfer([00],500000,20)
-            resp.append(dummy[0])        
+            resp.append(dummy[0])
     GPIO.output(ppFRAME,False)
     time.sleep(.0003)
-    return resp	
-	
+    return resp
 
-def Init():	
+
+def Init():
     global daqcsPresent
     global Vcc
     for i in range (0,8):
@@ -419,7 +419,7 @@ def Init():
         if ((rtn-8)==i):
             daqcsPresent[i]=1
             ok=0
-            while(ok==0):              
+            while(ok==0):
                 Vcc[i] = getADC(i,8)
                 if Vcc[i]>3.0:
                     ok=1
@@ -427,5 +427,5 @@ def Init():
             setPWM(i,0,0)
             setPWM(i,1,0)
 
-    
+
 Init()

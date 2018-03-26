@@ -19,9 +19,9 @@ RELAY Control Functions
         Bit 0 is relay 1, bit 1 is relay 2, and so on. To turn all the relays on
         at once use the number 127 for the value.
     relaySTATE(addr) - Returns a 7-bit number with the current state of each
-        relay. Bit 0 is relay 1, bit 1 is relay 2, and so on. A "1" in a bit 
+        relay. Bit 0 is relay 1, bit 1 is relay 2, and so on. A "1" in a bit
         position means that the relay is on and zero means that i's off.
-    
+
 LED Control Functions
     setLED(addr) - turn on the LED
     clrLED(addr) - turn off the LED
@@ -35,3 +35,4 @@ System Level Functions:
     getADDR(addr) - return address of pi-plate. Used for polling available
         boards at power up.
     RESET(addr) - set RELAYplate to power on state. Turns all relays off.
+

@@ -168,9 +168,19 @@ def VerifyRELAY(relay):
     assert ((relay>=1) and (relay<=7)),"Relay number out of range. Must be between 1 and 7"
 
 def VerifyADDR(addr):
+    global relaysPresent
     assert ((addr>=0) and (addr<MAXADDR)),"RELAYplate address out of range"
     addr_str=str(addr)
+    retries = 3
+    while (relaysPresent[addr] != 1 and retries > 0):
+        retries -= 1
+        # try to poll again
+        rtn = getADDR(addr)
+        if (rtn == addr):
+            relaysPresent[addr] = 1
+            sys.stderr.write("successful poll with %d retries remaining\n" % retries)
     assert (relaysPresent[addr]==1),"No RELAYplate found at address "+addr_str
+            
 
 def ppCMDr(addr,cmd,param1,param2,bytes2return):
     global RELAYbaseADDR

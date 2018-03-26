@@ -342,9 +342,10 @@ def getID(addr):
 
     ppFRAME = 25
     GPIO.output(ppFRAME,True)
-    null = spi.writebytes(arg)
+    #null = spi.writebytes(arg)
+    null=spi.xfer(arg,300000,60)
     count=0
-    time.sleep(.0001)
+    #time.sleep(.0001)
     while (count<20):
         dummy=spi.xfer([00],500000,40)
         time.sleep(.0001)
